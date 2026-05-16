@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Password Generator with Minimums</title>
+  <title>Password Generator</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <style>
     :root {
       --bg: #f7f6f2;
@@ -145,9 +146,12 @@
 </head>
 <body>
   <div class="card">
-    <h1>Password Generator</h1>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+      <img src="logo.png" alt="Password Generator Logo" style="height:40px; width:40px; border-radius:8px;">
+      <h1 style="margin:0;">Password Generator</h1>
+    </div>
     <p class="top-note">
-      Minimum for each type defaults to 1. Change it if you need more of some type.
+      Generate secure passwords with customizable options.
       The sum of minimums cannot exceed the total length.
     </p>
 
