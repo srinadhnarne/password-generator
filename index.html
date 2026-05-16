@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Password Generator with Minimums</title>
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --card: #ffffff;
+      --soft: #f1f1ed;
+      --text: #1f1f1f;
+      --muted: #6b6b6b;
+      --primary: #01696f;
+      --primary-hover: #0c4e54;
+      --border: rgba(0,0,0,0.12);
+      --danger: #a13544;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .card {
+      width: 100%;
+      max-width: 780px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    h1 { margin: 0 0 8px; font-size: 1.7rem; }
+    p.top-note { margin: 0 0 20px; color: var(--muted); }
+    .field { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    input[type="range"] { flex: 1; accent-color: var(--primary); }
+    .range-value {
+      min-width: 44px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--soft);
+      border-radius: 10px;
+      padding: 6px 10px;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    .opt-row {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      background: var(--soft);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+    }
+    .opt-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .opt-min {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .opt-min input[type="number"] {
+      width: 60px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .actions, .output {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .output input {
+      flex: 1;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 1rem;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .primary:hover {
+      background: var(--primary-hover);
+    }
+    .secondary {
+      background: var(--soft);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .msg {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .error { color: var(--danger); }
+    @media (max-width: 720px) {
+      .opt-row {
+        grid-template-columns: 1fr;
+        align-items: flex-start;
+      }
+      .opt-min {
+        justify-content: flex-start;
+      }
+    }
+    @media (max-width: 560px) {
+      .actions, .output {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Password Generator</h1>
+    <p class="top-note">
+      Minimum for each type defaults to 1. Change it if you need more of some type.
+      The sum of minimums cannot exceed the total length.
+    </p>
+
+    <div class="field">
+      <label for="length">Character Count</label>
+      <div class="range-wrap">
+        <input type="range" id="length" min="1" max="50" value="12">
+        <span class="range-value" id="lengthValue">12</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Character Types and Minimum Counts</label>
+      <div class="options">
+        <div class="opt-row">
+          <div class="opt-main">
+            <input type="checkbox" id="uppercase" checked>
+            <span>Uppercase letters (A-Z)</span>
+          </div>
+          <div class="opt-min">
+            <span>Min uppercase</span>
+            <input type="number" id="minUppercase" min="0" value="1">
+          </div>
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-main">
+            <input type="checkbox" id="lowercase" checked>
+            <span>Lowercase letters (a-z)</span>
+          </div>
+          <div class="opt-min">
+            <span>Min lowercase</span>
+            <input type="number" id="minLowercase" min="0" value="1">
+          </div>
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-main">
+            <input type="checkbox" id="numbers" checked>
+            <span>Numbers (0-9)</span>
+          </div>
+          <div class="opt-min">
+            <span>Min numbers</span>
+            <input type="number" id="minNumbers" min="0" value="1">
+          </div>
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-main">
+            <input type="checkbox" id="special">
+            <span>Special characters (!@#$...)</span>
+          </div>
+          <div class="opt-min">
+            <span>Min special</span>
+            <input type="number" id="minSpecial" min="0" value="1">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="generateBtn" type="button">Generate</button>
+      <button class="secondary" id="copyBtn" type="button">Copy</button>
+    </div>
+
+    <div class="output">
+      <input type="text" id="result" readonly placeholder="Generated password appears here">
+    </div>
+
+    <div class="msg" id="message"></div>
+    <div class="msg" id="explain"></div>
+  </div>
+
+  <script>
+    const lengthInput = document.getElementById('length');
+    const lengthValue = document.getElementById('lengthValue');
+
+    const uppercase = document.getElementById('uppercase');
+    const lowercase = document.getElementById('lowercase');
+    const numbers = document.getElementById('numbers');
+    const special = document.getElementById('special');
+
+    const minUppercase = document.getElementById('minUppercase');
+    const minLowercase = document.getElementById('minLowercase');
+    const minNumbers = document.getElementById('minNumbers');
+    const minSpecial = document.getElementById('minSpecial');
+
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const result = document.getElementById('result');
+    const message = document.getElementById('message');
+    const explain = document.getElementById('explain');
+
+    const sets = {
+      uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      lowercase: 'abcdefghijklmnopqrstuvwxyz',
+      numbers: '0123456789',
+      special: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+    };
+
+    function randomIndex(max) {
+      const arr = new Uint32Array(1);
+      window.crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function randomChar(str) {
+      return str[randomIndex(str.length)];
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = randomIndex(i + 1);
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function normalizeMin(input, checked) {
+      let val = parseInt(input.value, 10);
+      if (!checked) {
+        return 0;
+      }
+      if (isNaN(val) || val < 0) {
+        val = 0;
+      }
+      input.value = String(val);
+      return val;
+    }
+
+    function generatePassword() {
+      lengthValue.textContent = lengthInput.value;
+      const length = Number(lengthInput.value);
+
+      const useUppercase = uppercase.checked;
+      const useLowercase = lowercase.checked;
+      const useNumbers = numbers.checked;
+      const useSpecial = special.checked;
+
+      const minU = normalizeMin(minUppercase, useUppercase);
+      const minL = normalizeMin(minLowercase, useLowercase);
+      const minN = normalizeMin(minNumbers, useNumbers);
+      const minS = normalizeMin(minSpecial, useSpecial);
+
+      const totalMin = minU + minL + minN + minS;
+
+      if (!useUppercase && !useLowercase && !useNumbers && !useSpecial) {
+        result.value = '';
+        message.textContent = 'Please select at least one character type.';
+        message.className = 'msg error';
+        explain.textContent = '';
+        return;
+      }
+
+      if (totalMin > length) {
+        result.value = '';
+        message.textContent = 'Total minimum characters exceeds the length.';
+        message.className = 'msg error';
+        explain.textContent =
+          'Current length: ' + length +
+          ', total minimum required: ' + totalMin +
+          '. Reduce minimums or increase length.';
+        return;
+      }
+
+      const passwordChars = [];
+
+      if (useUppercase) {
+        for (let i = 0; i < minU; i++) {
+          passwordChars.push(randomChar(sets.uppercase));
+        }
+      }
+      if (useLowercase) {
+        for (let i = 0; i < minL; i++) {
+          passwordChars.push(randomChar(sets.lowercase));
+        }
+      }
+      if (useNumbers) {
+        for (let i = 0; i < minN; i++) {
+          passwordChars.push(randomChar(sets.numbers));
+        }
+      }
+      if (useSpecial) {
+        for (let i = 0; i < minS; i++) {
+          passwordChars.push(randomChar(sets.special));
+        }
+      }
+
+      let allChars = '';
+      if (useUppercase) allChars += sets.uppercase;
+      if (useLowercase) allChars += sets.lowercase;
+      if (useNumbers) allChars += sets.numbers;
+      if (useSpecial) allChars += sets.special;
+
+      while (passwordChars.length < length) {
+        passwordChars.push(randomChar(allChars));
+      }
+
+      result.value = shuffle(passwordChars).join('');
+      message.textContent = 'Password generated successfully.';
+      message.className = 'msg';
+      explain.textContent =
+        'Guarantees at least the configured minimum for each selected type. ' +
+        'If minimum is 0, that type is optional but still allowed.';
+    }
+
+    lengthInput.addEventListener('input', generatePassword);
+
+    [uppercase, lowercase, numbers, special].forEach(el => {
+      el.addEventListener('change', generatePassword);
+    });
+
+    [minUppercase, minLowercase, minNumbers, minSpecial].forEach(input => {
+      input.addEventListener('input', generatePassword);
+    });
+
+    generateBtn.addEventListener('click', generatePassword);
+
+    copyBtn.addEventListener('click', async () => {
+      if (!result.value) return;
+      await navigator.clipboard.writeText(result.value);
+      message.textContent = 'Copied to clipboard.';
+      message.className = 'msg';
+    });
+
+    generatePassword();
+  </script>
+</body>
+</html>
